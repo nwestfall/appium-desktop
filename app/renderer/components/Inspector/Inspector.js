@@ -46,7 +46,7 @@ export default class Inspector extends Component {
   render () {
     const {screenshot, screenshotError, selectedElement = {},
       applyClientMethod, quitSession, isRecording, showRecord, startRecording,
-      pauseRecording, showLocatorTestModal, screenshotInteractionMode} = this.props;
+      pauseRecording, showLocatorTestModal, screenshotInteractionMode, changeOrientation} = this.props;
     const {path} = selectedElement;
 
     let main = <div className={InspectorStyles['inspector-main']}>
@@ -108,6 +108,9 @@ export default class Inspector extends Component {
         </Tooltip>
         <Tooltip title="Refresh Source & Screenshot">
           <Button id='btnReload' icon='reload' onClick={() => applyClientMethod({methodName: 'source'})}/>
+        </Tooltip>
+        <Tooltip title="Change Orientation">
+          <Button id='btnChangeOrientation' icon='tablet' onClick={() => applyClientMethod({methodName: 'source', changeOrientation: true})}/>
         </Tooltip>
         {!isRecording &&
          <Tooltip title="Start Recording">

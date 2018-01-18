@@ -122,7 +122,7 @@ export default class Screenshot extends Component {
       }
     }
 
-    const screenImg = <img src={`data:image/gif;base64,${screenshot}`} id="screenshot" />;
+    const screenImg = <img src={`${screenshot}`} id="screenshot" />;
 
     // Show the screenshot and highlighter rects. Show loading indicator if a method call is in progress.
     return <Spin size='large' spinning={!!methodCallInProgress}>

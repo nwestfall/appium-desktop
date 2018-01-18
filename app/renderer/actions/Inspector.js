@@ -64,6 +64,9 @@ const uniqueAttributes = [
   'accessibility-id',
 ];
 
+//Track orientation
+let rotateOrientation = false;
+
 /**
  * Translates sourceXML to JSON
  */
@@ -178,11 +181,35 @@ export function unselectHoveredElement (path) {
   };
 }
 
+async function rotateImage(orig) {
+  return new Promise(resolve => {
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    
+    var image = new Image();
+    image.src = "data:image/gif;base64," + orig;
+    image.onload = function() {
+      canvas.height = image.width;
+      canvas.width = image.height;
+      ctx.setTransform(0,1,-1,0,image.height,0);
+      ctx.drawImage(image, 0,0, image.width, image.height);
+      ctx.setTransform(1,0,0,1,0,0);
+      var rotated = canvas.toDataURL();
+      resolve(rotated);
+    };
+  });
+}
+
 /**
  * Requests a method call on appium
  */
 export function applyClientMethod (params) {
   return async (dispatch, getState) => {
+    //Change orientation
+    if(params.changeOrientation) {
+      rotateOrientation = !rotateOrientation;
+    }
+
     let isRecording = params.methodName !== 'quit' &&
                       params.methodName !== 'source' &&
                       getState().inspector.isRecording;
@@ -202,6 +229,13 @@ export function applyClientMethod (params) {
         dispatch({type: RECORD_ACTION, action: params.methodName, params: args });
       }
       dispatch({type: METHOD_CALL_DONE});
+
+      if(screenshot != undefined && rotateOrientation) {
+        screenshot = await rotateImage(screenshot);
+      } else {
+        screenshot = "data:image/gif;base64," + screenshot;
+      }
+
       dispatch({
         type: SET_SOURCE_AND_SCREENSHOT, 
         source: source && xmlToJSON(source), 
